@@ -61,28 +61,52 @@ function queryItem(sql, param){
         }
         else{
             let cost = param * result[0].price;
-            updateDB(param, result[0].item_id, result[0].stock_quantity, cost);
+            updateDB(param, result[0].item_id, result[0].stock_quantity, cost, result[0].product_sales, result[0].price);
         }
     });
 }
 
-function updateDB(param0, param1, param2, param3){
+function updateDB(amountPurchased, itemID, stockQuantity, cost, productSales, individualCost){
     let sql = 'UPDATE products set ? WHERE ?';
 
-    let newQuantity = param2 - param0;
+    let newQuantity = stockQuantity - amountPurchased;
 
     let info = [
         {
             stock_quantity: newQuantity,
         },
         {
-            item_id: param1,
+            item_id: itemID,
         }
     ]
 
     con.query(sql, info, function (err, result) {
         console.log('You Have Bought the Item!');
-        console.log('Total Price($): ' + param3)
+        console.log('Total Price($): ' + cost)
+    }); 
+
+    updateSales(amountPurchased, individualCost, productSales, itemID);
+}
+
+function updateSales(amountPurchased, cost, productSales, itemID){
+    let sql = 'UPDATE products set ? WHERE ?';
+
+    console.log('amount:' + amountPurchased);
+    console.log('price: ' + cost);
+
+    let newSales = productSales + (cost * amountPurchased);
+
+    let info = [
+        {
+            product_sales: newSales,
+        },
+        {
+            item_id: itemID,
+        }
+    ]
+
+    con.query(sql, info, function (err, result) {
+        console.log('Products Sales Updated!');
         con.end();
     }); 
 }

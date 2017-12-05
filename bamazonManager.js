@@ -39,6 +39,8 @@ function askQuestion(){
     });
 }
 
+let quantityArray = [];
+
 function initializeConnection(){
     con.connect(function(err) {
         if (err) throw err;
@@ -53,7 +55,6 @@ function initializeConnection(){
     });
 }
 
-let quantityArray = [];
 
 function displayAll(callback){
     let sql = `SELECT * FROM products`;
